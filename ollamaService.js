@@ -1,7 +1,7 @@
 // ollamaService.js
 
 const OLLAMA_URL = 'http://localhost:11434/api/generate';
-const MODEL = 'tinyllama';
+const MODEL = 'phi3:3.8b';
 
 async function askLLM(userMessage) {
   try {
@@ -11,19 +11,8 @@ async function askLLM(userMessage) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: MODEL,
-        prompt: `Answer in ONE SHORT sentence.
-Maximum 10 words.
-Only give the final answer.
-
-Question: ${userMessage}
-Answer: `,
-        stream: false,
-        options: {
-          temperature: 0.3,
-          num_predict: 60,
-          repeat_penalty: 1.2,
-          stop: ["Question:", "\n\n"]
-        }
+        prompt: `${userMessage}`,
+        stream: false
       })
     }
 
