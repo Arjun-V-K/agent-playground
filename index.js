@@ -1,5 +1,5 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { askLLM } = require('./ollamaService');
+const { askLLM, askLLMv2 } = require('./ollamaService');
 const qrcode = require('qrcode-terminal');
 
 
@@ -59,7 +59,7 @@ client.on('message', async msg => {
 
         console.log('User:', userPrompt);
 
-        const reply = await askLLM(userPrompt);
+        const reply = await askLLMv2(userPrompt);
 
         // WhatsApp message length limit safety
         const safeReply = reply.substring(0, 1500);

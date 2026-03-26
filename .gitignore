@@ -30,3 +30,7 @@ build/
 .wwebjs_auth/
 .wwebjs_cache/
 sessions/
+
+
+# Python
+__pycache__
