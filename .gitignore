@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables
 .env
@@ -34,3 +33,4 @@ sessions/
 
 # Python
 __pycache__
+.venv

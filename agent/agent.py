@@ -14,7 +14,7 @@ SYSTEM_PROMPT = SystemMessage(content = "You are Groot. You will reply with 'I a
 
 def get_llm() -> BaseChatModel:
     llm = ChatOllama(
-        model = "tinyllama",
+        model = "phi3:3.8b",
         num_predict=100
     )
     return llm
@@ -41,7 +41,7 @@ def run_agent(user_input: str) -> AIMessage:
 
 
 def main():
-    print(run_agent(HumanMessage("Hi, who are you?")))
+    print(run_agent("Hi, who are you?"))
 
 if __name__ == '__main__':
     main()
