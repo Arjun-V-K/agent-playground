@@ -1,0 +1,146 @@
+{
+    "data": {
+        "recentSubmissionList": [
+            {
+                "title": "Longest Substring Without Repeating Characters",
+                "titleSlug": "longest-substring-without-repeating-characters",
+                "timestamp": "1781073290",
+                "statusDisplay": "Wrong Answer",
+                "lang": "java"
+            },
+            {
+                "title": "Longest Substring Without Repeating Characters",
+                "titleSlug": "longest-substring-without-repeating-characters",
+                "timestamp": "1781073179",
+                "statusDisplay": "Accepted",
+                "lang": "java"
+            },
+            {
+                "title": "Merge k Sorted Lists",
+                "titleSlug": "merge-k-sorted-lists",
+                "timestamp": "1772208676",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Remove Nth Node From End of List",
+                "titleSlug": "remove-nth-node-from-end-of-list",
+                "timestamp": "1772005150",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Reorder List",
+                "titleSlug": "reorder-list",
+                "timestamp": "1771950559",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Merge Two Sorted Lists",
+                "titleSlug": "merge-two-sorted-lists",
+                "timestamp": "1771853111",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Merge Two Sorted Lists",
+                "titleSlug": "merge-two-sorted-lists",
+                "timestamp": "1771853024",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Merge Two Sorted Lists",
+                "titleSlug": "merge-two-sorted-lists",
+                "timestamp": "1771852984",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Reverse Linked List",
+                "titleSlug": "reverse-linked-list",
+                "timestamp": "1769696653",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Find the Largest Area of Square Inside Two Rectangles",
+                "titleSlug": "find-the-largest-area-of-square-inside-two-rectangles",
+                "timestamp": "1768675913",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Maximum Square Area by Removing Fences From a Field",
+                "titleSlug": "maximum-square-area-by-removing-fences-from-a-field",
+                "timestamp": "1768582786",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Maximize Area of Square Hole in Grid",
+                "titleSlug": "maximize-area-of-square-hole-in-grid",
+                "timestamp": "1768483243",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Linked List Cycle II",
+                "titleSlug": "linked-list-cycle-ii",
+                "timestamp": "1768401657",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Linked List Cycle",
+                "titleSlug": "linked-list-cycle",
+                "timestamp": "1768400811",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Separate Squares II",
+                "titleSlug": "separate-squares-ii",
+                "timestamp": "1768400445",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Middle of the Linked List",
+                "titleSlug": "middle-of-the-linked-list",
+                "timestamp": "1768314067",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Separate Squares I",
+                "titleSlug": "separate-squares-i",
+                "timestamp": "1768313710",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Minimum Window Substring",
+                "titleSlug": "minimum-window-substring",
+                "timestamp": "1768231456",
+                "statusDisplay": "Accepted",
+                "lang": "python3"
+            },
+            {
+                "title": "Minimum Window Substring",
+                "titleSlug": "minimum-window-substring",
+                "timestamp": "1768231432",
+                "statusDisplay": "Output Limit Exceeded",
+                "lang": "python3"
+            },
+            {
+                "title": "Minimum Window Substring",
+                "titleSlug": "minimum-window-substring",
+                "timestamp": "1768231114",
+                "statusDisplay": "Wrong Answer",
+                "lang": "python3"
+            }
+        ]
+    }
+}
