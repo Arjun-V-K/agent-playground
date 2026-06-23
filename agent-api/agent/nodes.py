@@ -38,7 +38,7 @@ def initialize_llm(provider: LLMProvider) -> BaseChatModel:
     raise ValueError(f"Unsupported LLM provider: {provider}")
 
 
-SUPPORTED_COMMANDS = ["/test", "/pm2 list", "/memory"]
+SUPPORTED_COMMANDS = ["/test", "/pm2 list", "/memory", "/temp"]
 
 _GEMINI_LLM = None
 _OLLAMA_LLM = None
@@ -84,6 +84,12 @@ def run_command(command: str):
             "cat /proc/meminfo | head -3", shell=True, capture_output=True, text=True
         )
         result = result.stdout
+    elif command == "/temp":
+        result = subprocess.run(
+            ["vcgencmd", "measure_temp"], capture_output=True, text=True
+        )
+        result = result.stdout
+
     logger.debug(f"Ran command: {command} with result: {result}")
     return result
 
