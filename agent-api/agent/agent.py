@@ -52,11 +52,12 @@ def construct_agent_graph():
     return graph.compile()
 
 
-def run_agent(user_input: str) -> AIMessage:
-    agent = construct_agent_graph()
+def run_agent(agent, user_input: str) -> AIMessage:
     initial_state = AgentState(
         messages=[SYSTEM_PROMPT] + [HumanMessage(content=user_input)]
     )
-    config = {"recursion_limit": 10}  # Prevent infinite loops
+    config = {
+        "recursion_limit": 10
+    }  # Prevent infinite loops TODO: look into other config options
     result: AgentState = agent.invoke(initial_state, config=config)
     return result["messages"][-1].content

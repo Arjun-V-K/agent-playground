@@ -1,16 +1,11 @@
 import logging
 import subprocess
-from enum import Enum
 from typing import Literal
 
+from agent.llms import get_gemini_llm, get_ollama_llm
+from agent.models import AgentState
 from langchain.messages import AIMessage
-from langchain_core.language_models import BaseChatModel
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_ollama import ChatOllama
 from langgraph.graph import END
-
-from .models import AgentState
-from .tools import get_user_submissions, multiply
 
 logger = logging.getLogger(__name__)
 
@@ -19,43 +14,7 @@ logging.basicConfig(
 )
 
 
-class LLMProvider(Enum):
-    LOCAL_OLLAMA = "ollama"
-    GOOGLE_GEMENI = "google_gemini"
-
-
-def initialize_llm(provider: LLMProvider) -> BaseChatModel:
-    """
-    Initializes and configures the LLM based on the selected provider.
-    """
-    if provider is LLMProvider.LOCAL_OLLAMA:
-        return ChatOllama(model="phi3:3.8b", num_predict=100)
-
-    if provider is LLMProvider.GOOGLE_GEMENI:
-        base_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
-        return base_llm.bind_tools([multiply, get_user_submissions])
-
-    raise ValueError(f"Unsupported LLM provider: {provider}")
-
-
 SUPPORTED_COMMANDS = ["/test", "/pm2 list", "/memory", "/temp"]
-
-_GEMINI_LLM = None
-_OLLAMA_LLM = None
-
-
-def get_gemini_llm() -> ChatGoogleGenerativeAI:
-    global _GEMINI_LLM
-    if _GEMINI_LLM is None:
-        _GEMINI_LLM = initialize_llm(LLMProvider.GOOGLE_GEMENI)
-    return _GEMINI_LLM
-
-
-def get_ollama_llm() -> ChatOllama:
-    global _OLLAMA_LLM
-    if _OLLAMA_LLM is None:
-        _OLLAMA_LLM = initialize_llm(LLMProvider.LOCAL_OLLAMA)
-    return _OLLAMA_LLM
 
 
 def analyze_input(state: AgentState) -> AgentState:
@@ -107,7 +66,8 @@ def command_node(state: AgentState) -> AgentState:
 def gemini_node(state: AgentState) -> AgentState:
     logger.debug("In gemini_node")
     try:
-        result: AIMessage = get_gemini_llm().invoke(state.messages)
+        llm = get_gemini_llm()
+        result: AIMessage = llm.invoke(state.messages)
         return {"messages": [result], "llm_failed": False}
     except Exception as e:
         logger.exception(e)
@@ -116,7 +76,8 @@ def gemini_node(state: AgentState) -> AgentState:
 
 def local_llm_node(state: AgentState) -> AgentState:
     logger.debug("In local_llm_node")
-    result: AIMessage = get_ollama_llm().invoke(state.messages)
+    llm = get_ollama_llm()
+    result: AIMessage = llm.invoke(state.messages)
     return {"messages": [result]}
 
 
@@ -140,6 +101,6 @@ def routing_function_local_or_tool_or_end(
 
     last_message = state.messages[-1]
     if last_message.tool_calls:
-        return "tools"
+        return "tool_node"
 
     return END
