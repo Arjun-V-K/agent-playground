@@ -2,7 +2,7 @@ import logging
 import subprocess
 from typing import Literal
 
-from agent.llms import get_gemini_llm, get_ollama_llm
+from agent.llms import get_llm, get_model_configuration
 from agent.models import AgentState
 from langchain.messages import AIMessage
 from langgraph.graph import END
@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 
-SUPPORTED_COMMANDS = ["/test", "/pm2 list", "/memory", "/temp"]
+SUPPORTED_COMMANDS = ["/test", "/pm2 list", "/memory", "/temp", "/switch"]
 
 
 def analyze_input(state: AgentState) -> AgentState:
@@ -48,6 +48,9 @@ def run_command(command: str):
             ["vcgencmd", "measure_temp"], capture_output=True, text=True
         )
         result = result.stdout
+    elif command == "/switch":
+        result = get_model_configuration().switch_model()
+        result = f"Switched to {result} model"
 
     logger.debug(f"Ran command: {command} with result: {result}")
     return result
@@ -63,41 +66,28 @@ def command_node(state: AgentState) -> AgentState:
     return {"messages": [command_output]}
 
 
-def gemini_node(state: AgentState) -> AgentState:
-    logger.debug("In gemini_node")
-    try:
-        llm = get_gemini_llm()
-        result: AIMessage = llm.invoke(state.messages)
-        return {"messages": [result], "llm_failed": False}
-    except Exception as e:
-        logger.exception(e)
-    return {"llm_failed": True}
-
-
-def local_llm_node(state: AgentState) -> AgentState:
-    logger.debug("In local_llm_node")
-    llm = get_ollama_llm()
+def llm_node(state: AgentState) -> AgentState:
+    # TODO: error handling when llm fails
+    logger.debug("In llm_node")
+    llm = get_llm()
     result: AIMessage = llm.invoke(state.messages)
-    return {"messages": [result]}
+    return {"messages": [result], "llm_failed": False}
 
 
 def routing_function_llm_or_command(
     state: AgentState,
-) -> Literal["command_node", "gemini_node"]:
-    logger.debug("Routing to llm or command node")
+) -> Literal["command_node", "llm_node"]:
+    logger.debug("In routing_function_llm_or_command")
     if state.message_type == "command":
         return "command_node"
     elif state.message_type == "llm":
-        return "gemini_node"
+        return "llm_node"
 
 
-def routing_function_local_or_tool_or_end(
+def routing_function_tool_or_end(
     state: AgentState,
 ) -> Literal["local_llm_node", "tool_node", "end"]:
-    logger.debug("Routing to local or tool or end")
-
-    if state.llm_failed:
-        return "local_llm_node"
+    logger.debug("In routing_function_tool_or_end")
 
     last_message = state.messages[-1]
     if last_message.tool_calls:
