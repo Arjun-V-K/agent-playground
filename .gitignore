@@ -34,3 +34,5 @@ sessions/
 # Python
 __pycache__
 .venv
+
+*.sqlite*
