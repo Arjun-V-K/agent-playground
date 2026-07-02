@@ -38,12 +38,12 @@ async function askLLM(userMessage) {
 
 const AGENT_URL = 'http://localhost:8000/invoke';
 
-async function askLLMv2(userMessage) {
+async function askLLMv2(senderName, userMessage) {
   try {
     const request = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ msg: userMessage })
+      body: JSON.stringify({ senderName: senderName, msg: userMessage })
     };
 
     console.log('[OllamaService] askLLMv2 Request:', request);

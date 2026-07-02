@@ -52,7 +52,7 @@ class ModelType(str, Enum):
 
 
 class ModelConfiguration(BaseModel):
-    model_type: ModelType = ModelType.LOCAL
+    model_type: ModelType = ModelType.CLOUD
 
     def switch_model(self) -> str:
         self.model_type = (

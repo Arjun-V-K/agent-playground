@@ -5,6 +5,8 @@ from typing import Literal
 from agent.llms import get_llm, get_model_configuration
 from agent.models import AgentState
 from langchain.messages import AIMessage
+from langchain_core.messages import RemoveMessage, SystemMessage
+from langchain_core.messages.utils import count_tokens_approximately, trim_messages
 from langgraph.graph import END
 
 logger = logging.getLogger(__name__)
@@ -60,6 +62,16 @@ def command_node(state: AgentState) -> AgentState:
     logger.debug("In command_node")
     current_command = state.messages[-1].content
     command_output = f"Unsupported command. Available commands are {SUPPORTED_COMMANDS}"
+
+    # Clear all messages expect SystemMessage
+    if current_command == "/clear":
+        delete_messages = [
+            RemoveMessage(id=m.id)
+            for m in state.messages
+            if not isinstance(m, SystemMessage)
+        ]
+        return {"messages": delete_messages + [AIMessage(content="Memory cleared")]}
+
     if current_command in SUPPORTED_COMMANDS:
         command_output = run_command(current_command)
     logger.debug(f"Command Output set as {command_output}")
@@ -70,8 +82,29 @@ def llm_node(state: AgentState) -> AgentState:
     # TODO: error handling when llm fails
     logger.debug("In llm_node")
     llm = get_llm()
-    result: AIMessage = llm.invoke(state.messages)
-    return {"messages": [result], "llm_failed": False}
+
+    # Trimming old messages
+    trimmed_messages = trim_messages(
+        state.messages,
+        strategy="last",
+        token_counter=count_tokens_approximately,
+        max_tokens=512,
+        start_on="human",
+        end_on=("human", "tool"),
+        include_system=True,
+    )
+
+    logger.debug(
+        f"All messages : {state.messages} \n Trimmed messages: {trimmed_messages}"
+    )
+    result: AIMessage = llm.invoke(trimmed_messages)
+
+    messages_to_remove = [m for m in state.messages if m not in trimmed_messages]
+
+    return {
+        "messages": [result] + [RemoveMessage(id=m.id) for m in messages_to_remove],
+        "llm_failed": False,
+    }
 
 
 def routing_function_llm_or_command(

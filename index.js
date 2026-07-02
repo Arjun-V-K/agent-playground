@@ -2,6 +2,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const { askLLM, askLLMv2 } = require('./ollamaService');
 const qrcode = require('qrcode-terminal');
 
+console.log("Starting Bot...")
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -11,60 +12,88 @@ const client = new Client({
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-	    '--disable-dev-shm-usage',
+            '--disable-dev-shm-usage',
             '--disable-gpu'
-]
+        ]
     }
 });
 
-// Listen for QR code
+
+client.on('authenticated', () => {
+    console.log('Authenticated with WhatsApp session.');
+});
+
+client.on('auth_failure', msg => {
+    console.error('Auth failure:', msg);
+});
+
+client.on('change_state', state => {
+    console.log('State changed:', state);
+});
+
+client.on('disconnected', reason => {
+    console.warn('Client disconnected:', reason);
+});
+
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
-    console.log("Scan the QR code above with WhatsApp on your phone");
+    console.log('Scan the QR code above with WhatsApp on your phone');
 });
 
 // Bot ready
 client.on('ready', () => {
-    console.log('Hello World bot is ready!');
+    console.log('Whatsapp Bot is ready!');
 });
 
 // Simple message handler
 client.on('message', async msg => {
-    
+    const senderName = (await msg.getContact()).pushname
+    console.log('Received message:', {
+        from: msg.from,
+        body: msg.body,
+        mentionedIds: msg.mentionedIds,
+        fromMe: msg.fromMe,
+        fromName: senderName
+    });
+
+
     // Ignore own messages
     if (msg.fromMe) return;
-
-    const botNumber = client.info.wid._serialized;
-    // const contact = await client.getContactById(msg.mentionedIds[0]);
-    var isMentioned = false;
-    // console.log(botNumber)
-    // console.log(msg.mentionedIds)
-    // console.log(contact.id._serialized)
-
-    for (const id of msg.mentionedIds) {
-        try {
-            const contact = await client.getContactById(id);
-            if (contact.id._serialized === botNumber) {
-                isMentioned = true;
-                break;
-            }
-        } catch (error) {
-            console.error('Error checking mention:', error);
-        }
+    if (!msg.body || msg.body.replace(/@\S+\s?/g, '').trim() === '') {
+        console.log('Skipping empty message');
+        return;
     }
 
+    const botId = client.info?.wid?._serialized;
+
+    let isMentioned = false;
+
+    const mentions = await msg.getMentions();
+    for (const contact of mentions) {
+        if (contact.id._serialized === botId) {
+            isMentioned = true;
+        }
+    }
+    
     // Only respond when bot is mentioned in group
     if (isMentioned) {
         const userPrompt = msg.body.replace(/@\S+\s?/g, '').trim();
 
-        console.log('User:', userPrompt);
+        console.log('User prompt:', userPrompt);
 
-        const reply = await askLLMv2(userPrompt);
+        // To show typing indicator
+        const chat = await msg.getChat();
+        chat.sendStateTyping();
+
+        const reply = await askLLMv2(senderName, userPrompt);
 
         // WhatsApp message length limit safety
-        const safeReply = reply.substring(0, 1500);
+        const safeReply = reply.substring(0, 2000);
 
+        console.log('Replying with:', safeReply);
         msg.reply(safeReply);
+    } else {
+        console.log('Bot not mentioned; ignoring message');
     }
 });
 
